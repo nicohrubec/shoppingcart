@@ -13,12 +13,12 @@ class ShoppingCart(IShoppingCart):
         self.pricer = pricer
         self._contents: Dict[str,int] = {}
 
-    def add_item(self, item_type: str, number: int):
+    def add_item(self, item_type: str, amount: int):
         # adds new item to or update existing item in the shopping cart
         if item_type not in self._contents:
-            self._contents[item_type] = number
+            self._contents[item_type] = amount
         else:
-            self._contents[item_type] = self._contents[item_type] + number
+            self._contents[item_type] = self._contents[item_type] + amount
 
     def print_receipt(self):
         total_price = 0
