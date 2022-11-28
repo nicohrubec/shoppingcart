@@ -16,6 +16,9 @@ class ShoppingCart(IShoppingCart):
         self.formatter = formatter
         self._contents: Dict[str,int] = OrderedDict()
 
+    def get_contents(self):
+        return self._contents
+
     def add_item(self, item_type: str, amount: int):
         # adds new item to or update existing item in the shopping cart
         if item_type not in self._contents:
