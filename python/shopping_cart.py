@@ -4,14 +4,16 @@ from collections import OrderedDict
 
 from shopping_cart_interface import IShoppingCart
 from pricer import Pricer
+from formatter import Formatter, PriceFirstFormatter
 
 
 class ShoppingCart(IShoppingCart):
     """
     Implementation of the shopping tills in our supermarket.
     """
-    def __init__(self, pricer: Pricer):
+    def __init__(self, pricer: Pricer, formatter: Formatter):
         self.pricer = pricer
+        self.formatter = formatter
         self._contents: Dict[str,int] = OrderedDict()
 
     def add_item(self, item_type: str, amount: int):
@@ -27,9 +29,9 @@ class ShoppingCart(IShoppingCart):
         for item_type, amount in self._contents.items():
             price = self.pricer.get_price(item_type)
             total_price += price * amount
-            print(f"{item_type} - {amount} - {price}")
+            self.formatter.print_receipt_row(item_type, amount, price)
 
-        print(f"Total: {total_price}")
+        self.formatter.print_total_row(total_price)
 
 class ShoppingCartCreator(ABC):
     """
@@ -41,10 +43,20 @@ class ShoppingCartCreator(ABC):
         # return the ShoppingCart object
         pass
 
-    def operation(self) -> ShoppingCart:
+    def operation(self, receipt_format='default') -> ShoppingCart:
         # Here more operations can be performed on the ShoppingCart object
         # returns ShoppingCart object
-        return self.factory_method()
+        shopping_cart = self.factory_method()
+
+        # set correct formatter
+        if receipt_format == 'default':
+            pass
+        elif receipt_format == 'price-first':
+            shopping_cart.formatter = PriceFirstFormatter()
+        else:
+            raise NotImplementedError
+
+        return shopping_cart
 
 class ShoppingCartConcreteCreator(ShoppingCartCreator):
     """
@@ -53,4 +65,4 @@ class ShoppingCartConcreteCreator(ShoppingCartCreator):
     """
     def factory_method(self) -> ShoppingCart:
         # returns ShoppingCart object
-        return ShoppingCart(Pricer())
+        return ShoppingCart(Pricer(), Formatter())

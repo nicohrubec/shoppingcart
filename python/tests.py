@@ -4,12 +4,20 @@ from shopping_cart import ShoppingCartConcreteCreator
 from test_utils import Capturing
 
 class ShoppingCartTest(unittest.TestCase):
-    def test_print_receipt(self):
+    def test_print_receipt_default_format(self):
         sc = ShoppingCartConcreteCreator().operation()
         sc.add_item("apple", 2)
         with Capturing() as output:
             sc.print_receipt()
         self.assertEqual("apple - 2 - 100", output[0])
+        self.assertEqual("Total: 200", output[1])
+
+    def test_print_receipt_price_first_format(self):
+        sc = ShoppingCartConcreteCreator().operation(receipt_format='price-first')
+        sc.add_item("apple", 2)
+        with Capturing() as output:
+            sc.print_receipt()
+        self.assertEqual("100 - apple - 2", output[0])
         self.assertEqual("Total: 200", output[1])
 
     def test_doesnt_explode_on_mystery_item(self):
